@@ -41,7 +41,7 @@ Cette implémentation utilise SQLAlchemy pour gérer les transformations dans un
 Pour créer la table des transformations :
 
 ```bash
-python init_db.py
+python scripts/init_db.py
 ```
 
 Cela créera la table `transformations` dans la base de données SQLite.
@@ -51,7 +51,7 @@ Cela créera la table `transformations` dans la base de données SQLite.
 Pour vérifier la structure de la base de données :
 
 ```bash
-python check_db.py
+python scripts/check_db.py
 ```
 
 ## Utilisation de l'API
