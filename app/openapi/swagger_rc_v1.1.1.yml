@@ -1,0 +1,342 @@
+openapi: 3.0.3
+info:
+  title: Rate Cards API
+  version: 1.1.1
+servers:
+  - url: https://api.example.com
+paths:
+  /transformations:
+    get:
+      summary: List transformations (cursor-based pagination)
+      parameters:
+        - in: query
+          name: cursor
+          schema:
+            type: string
+            nullable: true
+          description: Cursor for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: date
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              start:
+                type: string
+                format: date
+              end:
+                type: string
+                format: date
+            required:
+              - start
+              - end
+        - in: query
+          name: carrier
+          schema:
+            type: string
+        - in: query
+          name: trade_lane
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/StatusEnum'
+      responses:
+        "200":
+          description: List of transformations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransformationList'
+    post:
+      summary: Create a transformation
+      description: Upload Excel + Word files and metadata
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - excel_file
+                - word_file
+                - data
+              properties:
+                excel_file:
+                  type: string
+                  format: binary
+                word_file:
+                  type: string
+                  format: binary
+                data:
+                  type: string
+                  description: JSON string containing a TransformationInput
+      responses:
+        "201":
+          description: Transformation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transformation'
+  /trade-lanes:
+    get:
+      summary: Get available trade lanes
+      responses:
+        "200":
+          description: List of trade lanes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /transformations/{id}/status-details-in-progress:
+    get:
+      summary: Get detailed in-progress status (for pooling)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Status details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusDetails'
+  /transformations/{id}/publish:
+    post:
+      summary: Publish the transformation
+      description: Upload modified Excel OR publish without modification
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - excel_file
+                - modified
+              properties:
+                excel_file:
+                  type: string
+                  format: binary
+                modified:
+                  type: boolean
+      responses:
+        "200":
+          description: Transformation published
+components:
+  schemas:
+    StatusEnum:
+      type: string
+      enum:
+        - SENT_TO_DMP
+        - IN_PROGRESS
+        - PENDING_FINAL_REVIEW
+        - NEEDING_INPUT
+    TransformationList:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transformation'
+        next_cursor:
+          type: string
+          nullable: true
+    Transformation:
+      type: object
+      required:
+        - id
+        - created_at
+        - status
+        - carrier
+        - trade_lane
+        - file_names
+      properties:
+        id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        carrier:
+          type: string
+        trade_lane:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        file_names:
+          type: object
+          properties:
+            xlsx_name:
+              type: string
+            docx_name:
+              type: string
+          required:
+            - xlsx_name
+            - docx_name
+    StatusDetails:
+      type: object
+      required:
+        - UPLOAD_COMPLETE
+        - PROCESSING
+        - REVIEW
+        - READY_TO_PUBLISH
+      properties:
+        UPLOAD_COMPLETE:
+          type: boolean
+        PROCESSING:
+          type: boolean
+        REVIEW:
+          type: boolean
+        READY_TO_PUBLISH:
+          type: boolean
+    TransformationInput:
+      type: object
+      required:
+        - carrier
+        - trade_lane
+        - dates
+      properties:
+        carrier:
+          type: string
+        trade_lane:
+          type: string
+        dates:
+          type: array
+          items:
+            type: object
+            required:
+              - application_date
+              - validity_date
+              - sheets
+            properties:
+              application_date:
+                type: string
+                format: date
+              validity_date:
+                type: string
+                format: date
+              sheets:
+                type: array
+                items:
+                  type: string
+        geo_restriction:
+          type: string
+          nullable: true
+        sheets_and_filters:
+          type: object
+          required:
+            - sheets_to_exclude
+            - filters
+          properties:
+            sheets_to_exclude:
+              type: array
+              items:
+                type: string
+            filters:
+              type: array
+              items:
+                $ref: '#/components/schemas/SheetFilter'
+        surcharges_to_exclude:
+          type: array
+          items:
+            type: string
+        surcharges_included:
+          type: array
+          items:
+            $ref: '#/components/schemas/SurchargeIncluded'
+        surcharges_to_be_added:
+          type: array
+          items:
+            $ref: '#/components/schemas/SurchargeToBeAdded'
+    SheetFilter:
+      type: object
+      required:
+        - name
+        - column
+      properties:
+        name:
+          type: string
+        column:
+          type: string
+        sheet_name:
+          type: string
+          nullable: true
+    SurchargeIncluded:
+      type: object
+      required:
+        - surcharge_code
+        - validity_date
+        - expiry_date
+      properties:
+        surcharge_code:
+          type: string
+        geo_restriction:
+          type: string
+          nullable: true
+        validity_date:
+          type: string
+          format: date
+        expiry_date:
+          type: string
+          format: date
+        sheet_name:
+          type: string
+          nullable: true
+    SurchargeToBeAdded:
+      type: object
+      required:
+        - surcharge_code
+        - price
+        - currency
+        - geo_restriction
+        - basis
+      properties:
+        surcharge_code:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        geo_restriction:
+          type: string
+          nullable: true
+        validity_date:
+          type: string
+          format: date
+          nullable: true
+        expiry_date:
+          type: string
+          format: date
+          nullable: true
+        basis:
+          type: string
+          enum:
+            - CONTAINER
+            - DOC
+        sheet_name:
+          type: string
+          nullable: true
