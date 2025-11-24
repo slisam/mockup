@@ -4,6 +4,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Dep
 import json
 from typing import List, Optional
 from datetime import date
+from sqlalchemy.orm import Session
 
 from app.schemas.transformations import (
     TransformationInput,
@@ -12,13 +13,13 @@ from app.schemas.transformations import (
     TransformationList,
 )
 from app.services.transformations import TransformationsService
+from app.core.db.session import get_db
 
 router = APIRouter()
 
 
-def get_transformations_service() -> TransformationsService:
-    # NOTE: Replace with a singleton or DI container if needed
-    return TransformationsService()
+def get_transformations_service(db: Session = Depends(get_db)) -> TransformationsService:
+    return TransformationsService(db=db)
 
 
 @router.post("/transformations", response_model=TransformationList, status_code=201)

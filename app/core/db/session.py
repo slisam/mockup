@@ -2,13 +2,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from pathlib import Path
 from app.core import config
-from app.services.gcs_db import download_sqlite_from_gcs
+import os
 
 # -----------------------------------
 # Resolve DB path (local or cloud)
 # -----------------------------------
 
-if config.MODE == "local":
+MODE = os.getenv("MODE", "local")
+
+if MODE == "local":
     # Preserve old logic for LOCAL development
     DB_MODULE_DIR = Path(__file__).resolve().parent
     APP_DIR = DB_MODULE_DIR.parent
@@ -24,6 +26,7 @@ if config.MODE == "local":
 
 else:
     # Cloud mode → download SQLite file from GCS
+    from app.services.gcs_db import download_sqlite_from_gcs
     DB_FILE_PATH = download_sqlite_from_gcs()
 
 # -----------------------------------
