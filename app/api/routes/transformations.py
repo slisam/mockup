@@ -29,7 +29,6 @@ async def create_transformation(
     data: str = Form(..., description="JSON string containing TransformationInput"),
     service: TransformationsService = Depends(get_transformations_service),
 ):
-    """Create a transformation by uploading Excel + Word files and metadata"""
     try:
         data_dict = json.loads(data)
         transformation_data = TransformationInput(**data_dict)
@@ -61,9 +60,6 @@ async def list_transformations(
     status: Optional[List[StatusEnum]] = Query(None),
     service: TransformationsService = Depends(get_transformations_service),
 ):
-    """
-    List transformations 
-    """
     return service.list_transformations(
         cursor=cursor,
         limit=limit,
@@ -80,5 +76,4 @@ async def get_status_details(
     id: str,
     service: TransformationsService = Depends(get_transformations_service),
 ):
-    """Get detailed in-progress status for polling"""
     return service.get_status_details(id)

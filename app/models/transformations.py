@@ -10,8 +10,6 @@ from app.core.db.session import Base
 
 
 class Transformation(Base):
-    """SQLAlchemy model for transformations table."""
-
     __tablename__ = "transformations"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, index=True)
@@ -31,7 +29,6 @@ class Transformation(Base):
     status_details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert model to dictionary for API response."""
         return {
             "id": self.id,
             "created_at": self.created_at.isoformat(),
@@ -45,7 +42,6 @@ class Transformation(Base):
         }
 
     def get_transformation_data(self) -> Optional[Dict[str, Any]]:
-        """Parse and return transformation data from JSON."""
         if not self.transformation_data:
             return None
         try:
@@ -54,12 +50,10 @@ class Transformation(Base):
             return None
 
     def set_transformation_data(self, data: Dict[str, Any]) -> None:
-        """Store transformation data as JSON."""
         if data:
             self.transformation_data = json.dumps(data, default=str)
 
     def get_status_details(self) -> Dict[str, bool]:
-        """Parse and return status details from JSON."""
         default_status = {
             "UPLOAD_COMPLETE": False,
             "PROCESSING": False,
@@ -76,5 +70,4 @@ class Transformation(Base):
             return default_status
 
     def set_status_details(self, details: Dict[str, bool]) -> None:
-        """Store status details as JSON."""
         self.status_details = json.dumps(details)
