@@ -12,14 +12,7 @@ from app.schemas.transformations import TransformationInput, StatusEnum
 
 
 class TransformationsService:
-    """Service for managing transformations."""
-
     def __init__(self, db: Session):
-        """Initialize the service with a database session.
-
-        Args:
-            db: SQLAlchemy database session
-        """
         if db is None:
             raise ValueError("Database session cannot be None")
         self.db = db
@@ -30,19 +23,6 @@ class TransformationsService:
         word_file: UploadFile,
         data: TransformationInput
     ) -> Dict[str, Any]:
-        """Create a new transformation and save it to the database.
-
-        Args:
-            excel_file: Uploaded Excel file
-            word_file: Uploaded Word file
-            data: Transformation input data
-
-        Returns:
-            Dictionary with created transformation and pagination info
-
-        Raises:
-            HTTPException: If database operation fails
-        """
         try:
             transformation = Transformation(
                 id=str(uuid4()),
@@ -89,23 +69,6 @@ class TransformationsService:
         trade_lane: Optional[List[str]] = None,
         status: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
-        """List transformations with filtering and pagination.
-
-        Args:
-            cursor: Pagination cursor (ISO datetime string)
-            limit: Maximum number of items to return
-            date_start: Filter by start date
-            date_end: Filter by end date
-            carrier: Filter by carrier list
-            trade_lane: Filter by trade lane list
-            status: Filter by status list
-
-        Returns:
-            Dictionary with list of transformations and next cursor
-
-        Raises:
-            HTTPException: If database operation fails
-        """
         try:
             query = self.db.query(Transformation)
 
@@ -157,17 +120,6 @@ class TransformationsService:
             )
 
     def get_status_details(self, transformation_id: str) -> Dict[str, bool]:
-        """Get detailed status for a transformation.
-
-        Args:
-            transformation_id: The transformation ID
-
-        Returns:
-            Dictionary with status details
-
-        Raises:
-            HTTPException: If transformation not found or database error
-        """
         try:
             transformation = self.db.query(Transformation).filter(
                 Transformation.id == transformation_id
