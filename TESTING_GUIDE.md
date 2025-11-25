@@ -345,7 +345,7 @@ def test_404_not_found(client):
 python scripts/check_db.py
 
 # Compter les transformations
-sqlite3 ../ratecard-dump/ratecard.sqlite "SELECT COUNT(*) FROM transformations;"
+MODE=local python3 -c "from app.core.db.session import SessionLocal; from app.models.transformations import Transformation; db = SessionLocal(); print(db.query(Transformation).count()); db.close()"
 
 # Voir les dernières transformations
 sqlite3 ../ratecard-dump/ratecard.sqlite "SELECT id, carrier, status FROM transformations ORDER BY created_at DESC LIMIT 5;"
@@ -380,12 +380,18 @@ engine = create_engine(
 
 ```bash
 # Lancer SQLite en mode interactif
-sqlite3 ../ratecard-dump/ratecard.sqlite
+# Inspecter avec SQLAlchemy
+MODE=local python3 <<EOF
+from sqlalchemy import inspect
+from app.core.db.session import engine
+inspector = inspect(engine)
+print("Tables:", inspector.get_table_names())
+for table in inspector.get_table_names():
+    print(f"\nTable: {table}")
+    for col in inspector.get_columns(table):
+        print(f"  {col["name"]}: {col["type"]}")
+EOF
 
-# Commandes utiles
-.tables              # Lister les tables
-.schema transformations  # Voir le schéma
-SELECT * FROM transformations LIMIT 5;  # Voir les données
 ```
 
 ---
