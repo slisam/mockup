@@ -2,18 +2,32 @@
 
 ## 📋 Résumé
 
-Cette PR implémente une solution complète de gestion des transformations avec SQLAlchemy, incluant une infrastructure de test professionnelle.
+Cette PR implémente une solution complète de gestion des transformations avec **SQLAlchemy 100% pur** (aucune trace de sqlite3), incluant une infrastructure de test professionnelle et des corrections de bugs Swagger.
 
 ## 🎯 Objectifs
 
 - ✅ Remplacer SQL brut par SQLAlchemy ORM
 - ✅ Permettre l'enregistrement des transformations dans la base de données
+- ✅ **Supprimer toutes les traces de sqlite3 (100% SQLAlchemy)**
 - ✅ Nettoyer le code selon les bonnes pratiques Python
 - ✅ Ajouter une infrastructure de test complète
+- ✅ Corriger le bug Swagger UI "failed to fetch"
 
 ## 🔧 Changements principaux
 
-### 1. Implémentation SQLAlchemy
+### 1. SQLAlchemy 100% Pur
+
+**Suppression complète de sqlite3 :**
+- Supprimé `app/core/db/base.py` (classe SQLiteDB inutilisée)
+- Supprimé `app/services/history.py` (utilisait sqlite3)
+- Supprimé `app/models/history.py` (obsolète)
+- Supprimé `app/schemas/history.py` (non utilisé)
+- Supprimé `app/core/db/init_history_schema.py` (utilisait sqlite3)
+- Remplacé toutes les commandes sqlite3 dans la documentation
+
+**Le code utilise maintenant 100% SQLAlchemy ORM !**
+
+### 2. Implémentation SQLAlchemy
 
 **Modèle (`app/models/transformations.py`):**
 - Modèle `Transformation` avec SQLAlchemy ORM
@@ -55,7 +69,23 @@ Cette PR implémente une solution complète de gestion des transformations avec 
 - Suppression des fichiers redondants
 - Ajout de `.gitignore` complet
 
-### 3. Infrastructure de Test
+### 3. Corrections de bugs
+
+**Fix Swagger UI "failed to fetch" :**
+- L'ancienne configuration remplaçait l'OpenAPI auto-généré par un fichier YAML
+- Les endpoints n'apparaissaient pas dans Swagger
+- Solution : Utilisation de la génération automatique FastAPI
+- Résultat : ✅ Swagger UI fonctionne parfaitement
+
+### 4. Tests de persistance
+
+**Scripts de test de la base de données :**
+- `scripts/test_db_persistence.py` : Test unitaire de persistance
+- `scripts/test_api_db_persistence.sh` : Test complet API → BD
+- `PERSISTENCE_TEST_GUIDE.md` : Documentation complète
+- Confirme que `db.add()` + `db.commit()` fonctionne correctement
+
+### 5. Infrastructure de Test
 
 **Tests unitaires (20 tests, couverture > 95%):**
 
