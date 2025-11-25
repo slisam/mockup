@@ -1,6 +1,5 @@
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional
-from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy import and_
@@ -24,9 +23,13 @@ class TransformationsService:
         data: TransformationInput
     ) -> Dict[str, Any]:
         try:
+            now = datetime.now(timezone.utc)
+            timestamp = now.strftime("%Y%m%d%H%M%S%f")
+            transformation_id = f"{data.carrier}_{data.trade_lane}_{timestamp}"
+
             transformation = Transformation(
-                id=str(uuid4()),
-                created_at=datetime.now(timezone.utc),
+                id=transformation_id,
+                created_at=now,
                 status=StatusEnum.SENT_TO_DMP.value,
                 carrier=data.carrier,
                 trade_lane=data.trade_lane,
