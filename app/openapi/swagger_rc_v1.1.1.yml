@@ -39,7 +39,9 @@ paths:
         - in: query
           name: carrier
           schema:
-            type: string
+            type: array
+            items:
+              type: string
         - in: query
           name: trade_lane
           schema:
@@ -48,8 +50,8 @@ paths:
               type: string
         - in: query
           name: status
-          schema:
-            $ref: '#/components/schemas/StatusEnum'
+          schema:            
+              $ref: '#/components/schemas/StatusEnum'
       responses:
         "200":
           description: List of transformations
@@ -183,10 +185,7 @@ components:
         carrier:
           type: string
         trade_lane:
-          type: string
-        updated_at:
-          type: string
-          format: date-time
+          type: string        
         file_names:
           type: object
           properties:
@@ -217,8 +216,7 @@ components:
       type: object
       required:
         - carrier
-        - trade_lane
-        - dates
+        - trade_lane        
       properties:
         carrier:
           type: string
@@ -230,8 +228,7 @@ components:
             type: object
             required:
               - application_date
-              - validity_date
-              - sheets
+              - validity_date              
             properties:
               application_date:
                 type: string
@@ -242,10 +239,8 @@ components:
               sheets:
                 type: array
                 items:
-                  type: string
-        geo_restriction:
-          type: string
-          nullable: true
+                  type: string 
+                nullable: true       
         sheets_and_filters:
           type: object
           required:
@@ -283,14 +278,14 @@ components:
         column:
           type: string
         sheet_name:
-          type: string
+          type: array
+          items:
+            type: string
           nullable: true
     SurchargeIncluded:
       type: object
       required:
-        - surcharge_code
-        - validity_date
-        - expiry_date
+        - surcharge_code        
       properties:
         surcharge_code:
           type: string
@@ -300,19 +295,22 @@ components:
         validity_date:
           type: string
           format: date
+          nullable: true
         expiry_date:
           type: string
           format: date
+          nullable: true
         sheet_name:
-          type: string
+          type: array
+          items:
+            type: string
           nullable: true
     SurchargeToBeAdded:
       type: object
       required:
         - surcharge_code
         - price
-        - currency
-        - geo_restriction
+        - currency        
         - basis
       properties:
         surcharge_code:
@@ -338,5 +336,7 @@ components:
             - CONTAINER
             - DOC
         sheet_name:
-          type: string
+          type: array
+          items:
+            type: string
           nullable: true
