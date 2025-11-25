@@ -11,14 +11,20 @@ os.environ['MODE'] = 'local'
 from app.core.db.session import Base
 from app.main import app
 from app.core.db.session import get_db
+from app.models.transformations import Transformation  # Import model to register with Base.metadata
+from app.api.routes.transformations import get_transformations_service
+from app.services.transformations import TransformationsService
 
 
 @pytest.fixture(scope="function")
 def test_db():
     """Create a test database for each test."""
-    # Use in-memory SQLite database for tests
+    # Use file-based SQLite for tests to avoid connection issues
+    import tempfile
+    db_fd, db_path = tempfile.mkstemp(suffix=".db")
+
     engine = create_engine(
-        "sqlite:///:memory:",
+        f"sqlite:///{db_path}",
         connect_args={"check_same_thread": False}
     )
 
@@ -33,7 +39,9 @@ def test_db():
         yield db
     finally:
         db.close()
-        Base.metadata.drop_all(bind=engine)
+        engine.dispose()
+        os.close(db_fd)
+        os.unlink(db_path)
 
 
 @pytest.fixture(scope="function")
@@ -45,7 +53,11 @@ def client(test_db):
         finally:
             pass
 
+    def override_get_transformations_service():
+        return TransformationsService(db=test_db)
+
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_transformations_service] = override_get_transformations_service
 
     with TestClient(app) as test_client:
         yield test_client
