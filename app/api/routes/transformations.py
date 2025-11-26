@@ -77,3 +77,10 @@ async def get_status_details(
     service: TransformationsService = Depends(get_transformations_service),
 ):
     return service.get_status_details(id)
+
+
+@router.get("/trade-lanes", response_model=List[str])
+async def get_trade_lanes(
+    service: TransformationsService = Depends(get_transformations_service),
+):
+    return service.get_trade_lanes()

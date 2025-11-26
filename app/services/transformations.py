@@ -142,3 +142,13 @@ class TransformationsService:
                 status_code=500,
                 detail=f"Database error while fetching status details: {str(e)}"
             )
+
+    def get_trade_lanes(self) -> List[str]:
+        try:
+            trade_lanes = self.db.query(Transformation.trade_lane).distinct().all()
+            return [tl[0] for tl in trade_lanes]
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Database error while fetching trade lanes: {str(e)}"
+            )
