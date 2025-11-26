@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 from sqlalchemy import String, DateTime, Text, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.core.db.session import Base
+from app.db.base import Base
 
 
 class Transformation(Base):
@@ -23,11 +23,14 @@ class Transformation(Base):
     trade_lane: Mapped[str] = mapped_column(String, nullable=False, index=True)
     xlsx_name: Mapped[str] = mapped_column(String, nullable=False)
     docx_name: Mapped[str] = mapped_column(String, nullable=False)
-    transformation_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    progress: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, default=0)
-    message: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    status_details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # we should remove them
+    # transformation_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # progress: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, default=0)
+    # message: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    # status_details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+
+## à prio not needed
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
@@ -41,6 +44,8 @@ class Transformation(Base):
             }
         }
 
+
+### à priori pas besoin
     def get_transformation_data(self) -> Optional[Dict[str, Any]]:
         if not self.transformation_data:
             return None

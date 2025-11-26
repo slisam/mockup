@@ -1,57 +1,57 @@
-# Python
+# -------------------------
+# Python cache / build
+# -------------------------
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
+*.pyo
+*.pyd
+*.pdb
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+
+# Caches générés par les tools
+*.sqlite-journal
+*.db-journal
 
 # Virtual environments
 venv/
-ENV/
-env/
-.venv
+.env/
+.venv/
 
-# IDE
+# -------------------------
+# IDE / OS
+# -------------------------
+# VSCode
 .vscode/
+
+# PyCharm / IntelliJ
 .idea/
+
+# MacOS
+.DS_Store
+
+# Linux
 *.swp
 *.swo
-*~
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
-ratecard-dump/
-
-# Environment variables
-.env
-.env.local
-
-# OS
-.DS_Store
-Thumbs.db
-
+# -------------------------
 # Logs
+# -------------------------
 *.log
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
+# -------------------------
+# Uvicorn / Gunicorn reload artifacts
+# -------------------------
+*.pid
+
+# -------------------------
+# Rate Card backend specifics
+# (on garde volontairement les .env)
+# -------------------------
+
+# dump SQLite local
+ratecard-dump/*.sqlite
+ratecard-dump/*.db
+ratecard-dump/*.bak
+
+# GCP python artifacts (optionnel)
+.token.json
