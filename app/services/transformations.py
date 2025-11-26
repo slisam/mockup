@@ -127,6 +127,37 @@ class TransformationsService:
                 status_code=500,
                 detail=f"Database error while listing transformations: {str(e)}"
             )
+
+    def get_status_details(self, transformation_id: str) -> Dict[str, bool]:
+        try:
+            transformation = self.db.query(Transformation).filter(
+                Transformation.id == transformation_id
+            ).first()
+
+            if not transformation:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Transformation {transformation_id} not found"
+                )
+
+            return transformation.get_status_details()
+        except HTTPException:
+            raise
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Database error while fetching status details: {str(e)}"
+            )
+
+    def get_trade_lanes(self) -> List[str]:
+        try:
+            trade_lanes = self.db.query(Transformation.trade_lane).distinct().all()
+            return [tl[0] for tl in trade_lanes]
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Database error while fetching trade lanes: {str(e)}"
+            )
     
     # TODO : service get trade_lanes
     # logic to implement : return an array of unique values of the column trade lane of the history table
