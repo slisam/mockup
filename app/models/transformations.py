@@ -7,6 +7,7 @@ from sqlalchemy import String, DateTime, Text, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db.session import Base
+from app.core.config import settings
 
 
 class Transformation(Base):
@@ -71,3 +72,13 @@ class Transformation(Base):
 
     def set_status_details(self, details: Dict[str, bool]) -> None:
         self.status_details = json.dumps(details)
+
+    def get_gcs_root_path(self) -> str:
+        root = settings.GCS_UPLOAD_PREFIX or "rate-cards"
+        return f"{root}/{self.carrier}/{self.trade_lane}/{self.id}"
+
+    def get_xlsx_gcs_path(self) -> str:
+        return f"{self.get_gcs_root_path()}/{self.xlsx_name}"
+
+    def get_docx_gcs_path(self) -> str:
+        return f"{self.get_gcs_root_path()}/{self.docx_name}"
