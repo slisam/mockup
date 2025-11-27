@@ -13,7 +13,7 @@ from app.schemas.transformations import (
     TransformationList,
 )
 from app.services.transformations import TransformationsService
-from app.core.db.session import get_db
+from app.db.session import get_db
 
 router = APIRouter()
 

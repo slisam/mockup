@@ -6,9 +6,9 @@ from fastapi.testclient import TestClient
 
 os.environ['MODE'] = 'local'
 
-from app.core.db.session import Base
+from app.db.base import Base
 from app.main import app
-from app.core.db.session import get_db
+from app.db.session import get_db
 from app.models.transformations import Transformation
 from app.api.routes.transformations import get_transformations_service
 from app.services.transformations import TransformationsService

@@ -49,7 +49,7 @@ class TestTransformationsService:
         assert len(result["items"]) == 1
         assert result["items"][0]["carrier"] == "MSC"
         assert result["items"][0]["trade_lane"] == "EU-US"
-        assert result["items"][0]["status"] == "SENT_TO_DMP"
+        assert result["items"][0]["status"] == "IN_PROGRESS"
         assert result["next_cursor"] is None
 
     def test_list_transformations_empty(self, test_db):
@@ -74,7 +74,7 @@ class TestTransformationsService:
         # Create test data
         t1 = Transformation(
             id="id-1",
-            status="SENT_TO_DMP",
+            status="IN_PROGRESS",
             carrier="MSC",
             trade_lane="EU-US",
             xlsx_name="test1.xlsx",
@@ -109,7 +109,7 @@ class TestTransformationsService:
         """Test filtering by carrier."""
         t1 = Transformation(
             id="id-1",
-            status="SENT_TO_DMP",
+            status="IN_PROGRESS",
             carrier="MSC",
             trade_lane="EU-US",
             xlsx_name="test1.xlsx",
@@ -147,7 +147,7 @@ class TestTransformationsService:
         for i in range(5):
             t = Transformation(
                 id=f"id-{i}",
-                status="SENT_TO_DMP",
+                status="IN_PROGRESS",
                 carrier="MSC",
                 trade_lane="EU-US",
                 xlsx_name=f"test{i}.xlsx",
@@ -189,7 +189,7 @@ class TestTransformationsService:
         """Test getting status details for existing transformation."""
         t = Transformation(
             id="test-id",
-            status="SENT_TO_DMP",
+            status="IN_PROGRESS",
             carrier="MSC",
             trade_lane="EU-US",
             xlsx_name="test.xlsx",
