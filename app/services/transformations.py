@@ -35,17 +35,17 @@ class TransformationsService:
                 trade_lane=data.trade_lane,
                 xlsx_name=excel_file.filename,
                 docx_name=word_file.filename,
-                #progress=0,
-                #message="Transformation créée avec succès"
+                progress=0,
+                message="Transformation créée avec succès"
             )
 
-            # transformation.set_transformation_data(data.model_dump())
-            # transformation.set_status_details({
-            #     "UPLOAD_COMPLETE": True,
-            #     "PROCESSING": False,
-            #     "REVIEW": False,
-            #     "READY_TO_PUBLISH": False
-            # })
+            transformation.set_transformation_data(data.model_dump())
+            transformation.set_status_details({
+                "UPLOAD_COMPLETE": True,
+                "PROCESSING": False,
+                "REVIEW": False,
+                "READY_TO_PUBLISH": False
+            })
 
             self.db.add(transformation)
             self.db.commit()
