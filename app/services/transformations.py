@@ -30,22 +30,22 @@ class TransformationsService:
             transformation = Transformation(
                 id=transformation_id,
                 created_at=now,
-                status=StatusEnum.SENT_TO_DMP.value,
+                status=StatusEnum.IN_PROGRESS.value,
                 carrier=data.carrier,
                 trade_lane=data.trade_lane,
                 xlsx_name=excel_file.filename,
                 docx_name=word_file.filename,
-                progress=0,
-                message="Transformation créée avec succès"
+                #progress=0,
+                #message="Transformation créée avec succès"
             )
 
-            transformation.set_transformation_data(data.model_dump())
-            transformation.set_status_details({
-                "UPLOAD_COMPLETE": True,
-                "PROCESSING": False,
-                "REVIEW": False,
-                "READY_TO_PUBLISH": False
-            })
+            # transformation.set_transformation_data(data.model_dump())
+            # transformation.set_status_details({
+            #     "UPLOAD_COMPLETE": True,
+            #     "PROCESSING": False,
+            #     "REVIEW": False,
+            #     "READY_TO_PUBLISH": False
+            # })
 
             self.db.add(transformation)
             self.db.commit()
@@ -61,6 +61,12 @@ class TransformationsService:
                 status_code=500,
                 detail=f"Database error while creating transformation: {str(e)}"
             )
+        
+        # TODO
+        # upload the both files into gcs bucket in .xlsx and .docx format
+        # upload the transformationinput in json format into gcs bucket
+        # trigger the dag airflow to launch the ai transformation with passing the transformation_id as an input
+
 
     def list_transformations(
         self,
@@ -152,3 +158,30 @@ class TransformationsService:
                 status_code=500,
                 detail=f"Database error while fetching trade lanes: {str(e)}"
             )
+    
+    # TODO : service get trade_lanes
+    # logic to implement : return an array of unique values of the column trade lane of the history table
+
+
+
+    # TODO : define the logic
+    # def get_status_details(self, transformation_id: str) -> Dict[str, bool]:
+    #     try:
+    #         transformation = self.db.query(Transformation).filter(
+    #             Transformation.id == transformation_id
+    #         ).first()
+
+    #         if not transformation:
+    #             raise HTTPException(
+    #                 status_code=404,
+    #                 detail=f"Transformation {transformation_id} not found"
+    #             )
+
+    #         return transformation.get_status_details()
+    #     except HTTPException:
+    #         raise
+    #     except SQLAlchemyError as e:
+    #         raise HTTPException(
+    #             status_code=500,
+    #             detail=f"Database error while fetching status details: {str(e)}"
+    #         )

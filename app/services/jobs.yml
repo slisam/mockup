@@ -1,0 +1,15 @@
+jobs:
+  - id: 1
+    name: parsing
+  - id: 2
+    name: extract-pols-pods
+  - id: 3
+    name: extract-containers-prices
+  - id: 4
+    name: extract-sop-instructions
+  - id: 5
+    name: extract-dates-currency
+  - id: 6
+    name: explode-pols-pods
+  - id: 9
+    name: build_unlocode
